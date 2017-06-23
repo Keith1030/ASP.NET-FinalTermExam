@@ -1,0 +1,93 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+}
+
+<script src="https://code.jquery.com/jquery-1.9.1.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $("#search").click(function(){
+            var data = {
+                CustomerID : $("#CustomerID").val(),
+                CompanyName: $("#CompanyName").val(),
+                ContactName: $("#ContactName").val(),
+                ContactTitle: $("#ContactTitle").val()
+            }
+            console.log("send data");
+            console.log(data);
+
+            $.ajax({
+                url: "./Search",
+                data: data,
+                type: "POST",
+                dataType: 'json',
+
+                success: function (result) {    
+                    console.log(result);
+                    $("#resultTable").find("tr:gt(0)").remove();
+                    $.each(result, function (key, value) {
+                        $('#resultTable tr:last').after('<tr><td style="text-align:right">' + value.CustomerID + '</td><td>' + value.CompanyName + '</td><td>' + value.ContactName + '</td><td>' + value.ContactTitle + '</td><td onclick="update(' + value.CustomerID + ')">修改</td><td onclick="del(' + value.CustomerID + ')">刪除</td></tr>');
+                    });
+                    
+                },
+
+                error: function (xhr, ajaxOptions, thrownError) {
+                    alert(xhr.status);
+                    alert(thrownError);
+                }
+            });
+        });
+        $("#clear").click(function () {
+            $("#CustomerID").val("");
+            $("#CompanyName").val("");
+            $("#ContactName").val("");
+            $("#ContactTitle").val("");
+        });
+    });
+    function update(CustomerID) {
+        alert("修改 客戶編號: " + CustomerID);
+    }
+    function del(CustomerID) {
+        alert("刪除 客戶編號: " + CustomerID);
+    }
+</script>
+<h2>客戶資料查詢</h2>
+<table style="border:3px black solid;" rules="all">
+    <tr>
+        <td>客戶編號</td>
+        <td><input id="CustomerID" type="number"/></td>
+    </tr>
+    <tr>
+        <td>客戶名稱</td>
+        <td><input id="CompanyName"/></td>
+    </tr>
+    <tr>
+        <td>聯絡人姓名</td>
+        <td><input id="ContactName"/></td>
+    </tr>
+    <tr>
+        <td>聯絡人職稱</td>
+        <td>
+            <select id="ContactTitle">
+                <option value="">未選取</option>
+                <option value="0001">Owner</option>
+                <option value="0002">Order Administrator</option>
+                <option value="0003">Sales Representative</option>
+                <option value="0004">Sales Agent</option>
+            </select>
+        </td>
+    </tr>
+    <tr>
+        <td></td>
+        <td>
+            <input id="search" type="button" value="查詢" />
+            <input id="clear" type="button" value="清除" />
+            <input id="" type="button" value="新增客戶" />
+        </td>
+    </tr>
+</table>   
+
+<h2>查詢結果</h2>
+<table id ="resultTable" style="border:3px black solid;" rules="all">
+    <tr><th>編號</th><th>名稱</th><th>聯絡人姓名</th><th>聯絡人職稱</th><th></th><th></th></tr>
+</table>
